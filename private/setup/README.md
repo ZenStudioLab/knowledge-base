@@ -9,6 +9,11 @@ Machine setup, tools, services, and accounts.
 - `tools/` - tool configuration
 - `accounts/` - account setup and credentials
 
+## Files
+
+- [Playwright MCP Debug Setup](./playwright-mcp-debug-setup.md) — Setup
+- [Wezterm: Maximize new windows on open](./wezterm-maximized.md)
+
 ## Rules
 
 - Document setup steps completely

@@ -6,6 +6,7 @@ Alphabetical index of all notes, articles, and runbooks.
 
 - [Deploy](./private/runbooks/deploy.md) — Runbook
 - [Inbox: 2026-04](./private/inbox/2026-04.md)
+- [Playwright MCP Debug Setup](./private/setup/playwright-mcp-debug-setup.md) — Setup
 - [Rollback](./private/runbooks/rollback.md) — Runbook
 - [Wezterm: Maximize new windows on open](./private/setup/wezterm-maximized.md)
 
