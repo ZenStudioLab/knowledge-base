@@ -15,6 +15,7 @@ knowledge-base/
 │   ├── tips/           # Tips and tricks
 │   ├── snippets/       # Code snippets
 │   ├── setup/          # Setup guides
+│   │   └── tools/ai-coding/  # AI coding tools (Claude, Copilot, Codex, Opencode)
 │   ├── ci-cd/          # CI/CD documentation
 │   ├── code/           # Code-related notes
 │   ├── projects/       # Project documentation
@@ -116,6 +117,7 @@ Each folder has a `README.md` that lists its contents. Keep these in sync when a
 |------|----------------|
 | Add a tip | Create in `private/tips/` + update catalog |
 | Add a setup guide | Create in `private/setup/` + update catalog |
+| Add an AI tool | Create in `private/setup/tools/ai-coding/providers/<tool>/index.md` + update catalog |
 | Add a runbook | Create in `private/runbooks/` + update catalog |
 | Quick capture | Add to `private/inbox/YYYY-MM.md` |
 | Publish content | Move from `private/` to `public/` + update catalog |
