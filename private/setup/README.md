@@ -6,7 +6,7 @@ Machine setup, tools, services, and accounts.
 
 - `local-dev/` - local development environment
 - `machine-setup/` - new machine bootstrap
-- `tools/` - tool configuration
+- `tools/ai-coding/` - AI coding tools (Claude, Copilot, Codex, Opencode)
 - `accounts/` - account setup and credentials
 
 ## Files
