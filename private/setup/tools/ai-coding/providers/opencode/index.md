@@ -36,6 +36,16 @@ curl -fsSL https://opencode.ai/install | sh
 
 ## Related Tools
 
+### OpenChamber
+
+Desktop and web interface for OpenCode AI agent.
+
+- **Repository:** [openchamber/openchamber](https://github.com/openchamber/openchamber)
+- **Language:** TypeScript
+- **License:** MIT
+- **Stats:** 2,723 stars, 279 forks
+- **Homepage:** https://openchamber.dev/
+
 ### OpenCode Monitor
 
 CLI tool for monitoring and analyzing OpenCode AI coding usage.
