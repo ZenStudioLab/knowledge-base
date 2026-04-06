@@ -16,7 +16,7 @@ Open-source terminal AI coding agent. Supports multiple model providers (Anthrop
 
 | Name | Purpose | Install |
 |------|---------|---------|
-| — | — | — |
+| Dynamic Context Pruning | Intelligently manages conversation context to optimize token usage | [GitHub](https://github.com/Opencode-DCP/opencode-dynamic-context-pruning) |
 
 ## Install
 
@@ -45,6 +45,15 @@ CLI tool for monitoring and analyzing OpenCode AI coding usage.
 - **License:** MIT
 - **Stats:** 248 stars, 40 forks
 - **Homepage:** https://ocmonitor.vercel.app/
+
+### OpenCode Dynamic Context Pruning
+
+Plugin for intelligently managing conversation context to optimize token usage.
+
+- **Repository:** [Opencode-DCP/opencode-dynamic-context-pruning](https://github.com/Opencode-DCP/opencode-dynamic-context-pruning)
+- **Language:** TypeScript
+- **License:** AGPL-3.0
+- **Stats:** 1,833 stars, 97 forks
 
 ## Related
 
