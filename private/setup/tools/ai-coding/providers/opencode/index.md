@@ -34,6 +34,18 @@ curl -fsSL https://opencode.ai/install | sh
 
 -
 
+## Related Tools
+
+### OpenCode Monitor
+
+CLI tool for monitoring and analyzing OpenCode AI coding usage.
+
+- **Repository:** [Shlomob/ocmonitor-share](https://github.com/Shlomob/ocmonitor-share)
+- **Language:** Python
+- **License:** MIT
+- **Stats:** 248 stars, 40 forks
+- **Homepage:** https://ocmonitor.vercel.app/
+
 ## Related
 
 - [Common](../../common.md)
