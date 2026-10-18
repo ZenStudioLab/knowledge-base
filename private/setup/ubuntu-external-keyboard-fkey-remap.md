@@ -16,7 +16,7 @@ publish_candidate: false
 
 Goal: on a ThinkPad Z16 Gen 2 (Ubuntu), make F1-F12 on an external 2.4 GHz keyboard (DAREU) do exactly what the same keys do on the laptop keyboard.
 
-Status: F1-F8 verified working on the external keyboard (F1 mutes, the other mapped keys also work). The setting and preset are live but not yet persistent across reboots, and F9-F12 are not mapped. See Open Items.
+Status: F1-F8 verified working on the external keyboard (F1 mutes, the other mapped keys also work). Reboot-proofing is applied (step 4) but not yet confirmed across an actual reboot, and F9-F12 are not mapped. See Open Items.
 
 ## Why a driver setting alone does not work
 
@@ -121,6 +121,48 @@ sudo input-remapper-control --config-dir "$CONF" --command start --device "$DEVI
 
 Then press F1 on the external keyboard: it should mute. Test F7 (monitor layout) and F8 (airplane mode) last because they change the setup.
 
+### 4. Survive reboots
+
+Two things reset otherwise: the `hid_apple` setting from step 2, and the running preset from step 3. This script fixes both and is safe to run more than once. It asks for your sudo password once.
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+DEVICE="Smart Smart Wireless Device"
+PRESET="dareu"
+CONF="$HOME/.config/input-remapper-2/config.json"
+
+# Autoload the preset (Input Remapper applies it at login and when the receiver is replugged)
+python3 - "$CONF" "$DEVICE" "$PRESET" <<'PY'
+import json, sys
+path, device, preset = sys.argv[1:4]
+with open(path) as f:
+    cfg = json.load(f)
+cfg.setdefault("autoload", {})[device] = preset
+with open(path, "w") as f:
+    json.dump(cfg, f, indent=4)
+PY
+
+# fnmode=2 at boot
+echo "options hid_apple fnmode=2" | sudo tee /etc/modprobe.d/hid_apple.conf
+echo 2 | sudo tee /sys/module/hid_apple/parameters/fnmode >/dev/null
+sudo update-initramfs -u
+```
+
+How it fits together on this machine:
+- `config.json` gets `"autoload": {"Smart Smart Wireless Device": "dareu"}`.
+- Input Remapper's autostart entry (`/etc/xdg/autostart/input-remapper-autoload.desktop`) runs `input-remapper-control --command autoload` at login.
+- Its udev rule (`60-input-remapper-daemon.rules`) does the same when a device is plugged in, so replugging the receiver reapplies the preset.
+
+After a reboot, check:
+
+```bash
+cat /sys/module/hid_apple/parameters/fnmode   # should print 2
+```
+
+Then press F1 on the external keyboard: it should mute.
+
 ## Debugging
 
 Read the daemon log. The unit is `input-remapper-daemon` (alias `input-remapper`). The log is the only place that shows real injection errors:
@@ -153,8 +195,7 @@ The drive reports a different owner, so git says "dubious ownership". Pass `git 
 
 - F10-F12: no confirmed Input Remapper key names for the call, end-call, and star codes yet.
 - F9: leave as plain F9; the laptop's F9 sends no visible event.
-- Make `fnmode=2` survive reboots: `echo "options hid_apple fnmode=2" | sudo tee /etc/modprobe.d/hid_apple.conf` (then reboot or replug the receiver).
-- Autoload the preset at login.
+- Confirm step 4 across a real reboot (fnmode prints 2, F1 mutes without running anything).
 
 ## Related
 
