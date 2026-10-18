@@ -14,6 +14,7 @@ Alphabetical index of all notes, articles, and runbooks.
 - [Inbox: 2026-04](./private/inbox/2026-04.md)
 - [Playwright MCP Debug Setup](./private/setup/playwright-mcp-debug-setup.md) — Setup
 - [Rollback](./private/runbooks/rollback.md) — Runbook
+- [Ubuntu: Make an external keyboard's F-row match the ThinkPad F-row](./private/setup/ubuntu-external-keyboard-fkey-remap.md) — Setup
 - [Wezterm: Maximize new windows on open](./private/setup/wezterm-maximized.md)
 
 ## Reference Folders
