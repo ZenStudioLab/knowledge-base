@@ -2,7 +2,7 @@
 title: "Ubuntu: Make an external keyboard's F-row match the ThinkPad F-row"
 created: "2026-10-18"
 updated: "2026-10-18"
-status: "in-progress"
+status: "active"
 visibility: "private"
 tags: [ubuntu, linux, keyboard, input-remapper, hid_apple, thinkpad, evtest]
 source: ""
@@ -16,7 +16,7 @@ publish_candidate: false
 
 Goal: on a ThinkPad Z16 Gen 2 (Ubuntu), make F1-F12 on an external 2.4 GHz keyboard (DAREU) do exactly what the same keys do on the laptop keyboard.
 
-Status when written: steps 1-3 are verified. Step 4 (the remap) was fixed after a daemon-log diagnosis, but the final "press F1, it mutes" test had not been confirmed yet. F9-F12 and persistence across reboots are still open.
+Status: F1-F8 verified working on the external keyboard (F1 mutes, the other mapped keys also work). The setting and preset are live but not yet persistent across reboots, and F9-F12 are not mapped. See Open Items.
 
 ## Why a driver setting alone does not work
 
@@ -151,7 +151,6 @@ The drive reports a different owner, so git says "dubious ownership". Pass `git 
 
 ## Open Items
 
-- Confirm the final F1-F8 test after the preset-format fix.
 - F10-F12: no confirmed Input Remapper key names for the call, end-call, and star codes yet.
 - F9: leave as plain F9; the laptop's F9 sends no visible event.
 - Make `fnmode=2` survive reboots: `echo "options hid_apple fnmode=2" | sudo tee /etc/modprobe.d/hid_apple.conf` (then reboot or replug the receiver).
