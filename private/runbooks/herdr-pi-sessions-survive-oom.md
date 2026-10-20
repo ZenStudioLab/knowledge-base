@@ -18,7 +18,7 @@ Two procedures for Ubuntu with Herdr running Pi coding-agent sessions in panes:
 - **A. Move the Herdr server into its own systemd service**, so one out-of-memory (OOM) kill takes one process instead of every pane.
 - **B. Bring Pi sessions back into their tabs** after Herdr lost them.
 
-Status (2026-10-20): B was done once and verified. A is prepared on the laptop (unit file and switch script installed, service not enabled) and has not been run yet.
+Status (2026-10-20): B was done once and verified. For A, the unit file and switch script are installed on the laptop and the service is enabled, so the switch happens at the next boot. Not verified until that boot.
 
 ### What happened on 2026-10-20
 
@@ -136,15 +136,24 @@ Ghostty window                  ← one systemd group
    echo "Done. Free memory: $(($(awk '/MemAvailable/ {print $2}' /proc/meminfo) / 1024)) MB"
    ```
 
-3. Pick a quiet moment. Stopping the server closes **every** pane, including any agent mid-task and the agent running these steps.
+3. Choose when to switch:
 
-4. Run the switch from outside Herdr's process tree, so it survives the server stop:
+   - **At the next boot (no disruption, used on 2026-10-20):**
 
-   ```bash
-   systemd-run --user --unit=herdr-switch --collect herdr-switch-to-service
-   ```
+     ```bash
+     systemctl --user daemon-reload
+     systemctl --user enable herdr-server.service   # no --now
+     ```
 
-5. Reopen `herdr` in the terminal. It should attach to the server the service started.
+     The running server is untouched. At the next login, systemd starts Herdr from the service before any terminal opens. Herdr restores the tabs and resumes the Pi sessions it has records for. One sign this works: after a clean reboot on 2026-10-20, Pi sessions were running again and receiving intercom messages within five minutes of Herdr's restore. After that boot, open `herdr` in the terminal and check the steps under Verification.
+
+   - **Right now:** pick a quiet moment, because stopping the server closes **every** pane, including any agent mid-task and the agent running these steps. Run the switch from outside Herdr's process tree, so it survives the server stop:
+
+     ```bash
+     systemd-run --user --unit=herdr-switch --collect herdr-switch-to-service
+     ```
+
+     Then reopen `herdr` in the terminal. It should attach to the server the service started.
 
 ### B. Bring Pi sessions back into their tabs
 
