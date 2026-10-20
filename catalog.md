@@ -13,6 +13,7 @@ Alphabetical index of all notes, articles, and runbooks.
 - [Deploy](./private/runbooks/deploy.md) — Runbook
 - [Herdr: keep Pi sessions alive through out-of-memory kills](./private/runbooks/herdr-pi-sessions-survive-oom.md) — Runbook
 - [Inbox: 2026-04](./private/inbox/2026-04.md)
+- [Pi intercom: send messages between Pi agents on two machines over SSH](./private/setup/pi-intercom-cross-machine.md) — Setup
 - [Playwright MCP Debug Setup](./private/setup/playwright-mcp-debug-setup.md) — Setup
 - [Rollback](./private/runbooks/rollback.md) — Runbook
 - [Ubuntu: Make an external keyboard's F-row match the ThinkPad F-row](./private/setup/ubuntu-external-keyboard-fkey-remap.md) — Setup

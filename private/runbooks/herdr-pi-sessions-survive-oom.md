@@ -49,6 +49,7 @@ Ghostty window                  ← one systemd group
    ```ini
    [Unit]
    Description=Herdr server in its own process group, outside the terminal
+   Documentation=https://github.com/ZenStudioLab/knowledge-base/blob/master/private/runbooks/herdr-pi-sessions-survive-oom.md
 
    [Service]
    ExecStart=%h/.local/bin/herdr server
@@ -201,3 +202,7 @@ Then use B if any Pi session did not come back.
 - **Unverified as of 2026-10-20:**
   - that the Ghostty Herdr client attaches to a server it did not start;
   - that Herdr auto-resumes Pi sessions after a clean `herdr server stop`. That's why the script records the map first and resumes anything missing.
+
+## Related
+
+- [Pi intercom: send messages between Pi agents on two machines over SSH](../setup/pi-intercom-cross-machine.md)

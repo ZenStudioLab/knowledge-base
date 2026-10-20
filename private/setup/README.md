@@ -11,6 +11,7 @@ Machine setup, tools, services, and accounts.
 
 ## Files
 
+- [Pi intercom: send messages between Pi agents on two machines over SSH](./pi-intercom-cross-machine.md) — Setup
 - [Playwright MCP Debug Setup](./playwright-mcp-debug-setup.md) — Setup
 - [Ubuntu: Make an external keyboard's F-row match the ThinkPad F-row](./ubuntu-external-keyboard-fkey-remap.md) — Setup
 - [Wezterm: Maximize new windows on open](./wezterm-maximized.md)
