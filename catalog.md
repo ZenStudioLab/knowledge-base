@@ -11,6 +11,7 @@ Alphabetical index of all notes, articles, and runbooks.
 - [AI Coding Tools: Copilot](./private/setup/tools/ai-coding/providers/copilot/index.md) — Setup
 - [AI Coding Tools: Opencode](./private/setup/tools/ai-coding/providers/opencode/index.md) — Setup
 - [Deploy](./private/runbooks/deploy.md) — Runbook
+- [Herdr: keep Pi sessions alive through out-of-memory kills](./private/runbooks/herdr-pi-sessions-survive-oom.md) — Runbook
 - [Inbox: 2026-04](./private/inbox/2026-04.md)
 - [Playwright MCP Debug Setup](./private/setup/playwright-mcp-debug-setup.md) — Setup
 - [Rollback](./private/runbooks/rollback.md) — Runbook

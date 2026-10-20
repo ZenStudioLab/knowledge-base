@@ -13,6 +13,7 @@ Step-by-step procedures for repeatable tasks.
 ## Common runbooks
 
 - deploy.md
+- herdr-pi-sessions-survive-oom.md
 - rollback.md
 - db-migration.md
 - domain-dns.md
