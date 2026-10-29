@@ -1,7 +1,7 @@
 ---
 title: "Pi intercom: send messages between Pi agents on two machines over SSH"
 created: "2026-10-20"
-updated: "2026-10-20"
+updated: "2026-10-29"
 status: "active"
 visibility: "private"
 tags: [pi, pi-intercom, herdr, ssh, cross-machine, setup]
@@ -16,7 +16,7 @@ publish_candidate: false
 
 Goal: Pi agents on the laptop and on the workbox send each other messages with pi-intercom. Here "laptop" and "workbox" are both the SSH host aliases and the Herdr machine labels.
 
-Status (2026-10-20): planned, not set up. pi-intercom 0.17.1 and its local message broker already run on both machines, and the laptop reaches the workbox over SSH with a key. Every step under "Steps" is still to do.
+Status (2026-10-29): partly set up. Steps 1 and 3 are done and step 6 already holds (the workbox takes key-based SSH logins only). Step 2 waits on a Herdr upgrade on the laptop, which cannot run inside a Herdr session; steps 4 and 5 wait on step 2. pi-intercom 0.17.1 and its local message broker run on both machines, and the laptop reaches the workbox over SSH with a key, on the home network or through WARP.
 
 ## How it works
 
@@ -32,11 +32,13 @@ Each machine keeps its own broker, which only accepts local connections. To send
 
 ## What the upstream guide misses
 
-- **`node` over SSH:** `cli.mjs` starts with `#!/usr/bin/env node`, and node comes from nvm, which a non-interactive SSH command doesn't load. Even the full path to `cli.mjs` fails with `/usr/bin/env: 'node': No such file or directory`. A wrapper that calls nvm's node directly fixes it (step 1).
+- **`node` over SSH:** `cli.mjs` starts with `#!/usr/bin/env node`, and a non-interactive SSH command has no node on its `PATH`. Even the full path to `cli.mjs` fails with `/usr/bin/env: 'node': No such file or directory`. A wrapper that calls node by absolute path fixes it (step 1).
 - **Agent names:** a remote agent can only be addressed by name after it has been given one (step 4). Until then, only its full session UUID works.
-- **Herdr versions:** `herdr machine add` sets up Herdr on the remote side, so match versions first. On 2026-10-20 the laptop had 0.9.1 and the workbox 0.9.3. It's not confirmed that the mismatch breaks anything.
+- **Herdr versions:** `herdr machine add` prepares Herdr on the remote side, so match versions first. On 2026-10-29 the laptop had 0.9.1 and the workbox 0.9.5 (the current stable release). `herdr update` refuses to run inside a Herdr session, so detach first. It checks the download against the SHA-256 in the official `herdr.dev` release manifest.
 
 ## Steps (laptop → workbox, one way)
+
+Done on 2026-10-29: steps 1 and 3. Step 6 already holds.
 
 1. On the workbox, create `~/.local/bin/pi-intercom` and make it executable:
 
@@ -45,16 +47,21 @@ Each machine keeps its own broker, which only accepts local connections. To send
    exec "$HOME/.nvm/versions/node/v22.23.3/bin/node" "$HOME/.pi/agent/npm/node_modules/pi-intercom/cli.mjs" "$@"
    ```
 
-   Use the node version the workbox broker runs on, and update the path when nvm's default changes.
+   Done. The workbox has no nvm. Pi ships its own node, and `~/.local/share/pi-node/current` is a link to the current version, so the path above survives node upgrades:
 
-2. On the laptop, upgrade Herdr to the workbox version, then:
+   ```sh
+   #!/bin/sh
+   exec "$HOME/.local/share/pi-node/current/bin/node" "$HOME/.pi/agent/npm/node_modules/pi-intercom/cli.mjs" "$@"
+   ```
+
+2. On the laptop, detach from Herdr and run `herdr update` in a plain terminal so it matches the workbox version (0.9.5 on 2026-10-29), then:
 
    ```bash
    herdr machine add --label workbox workbox
    herdr --machine workbox agent list   # should list the workbox agents
    ```
 
-3. On the laptop, create `~/.pi/agent/intercom/config.json`. `remoteCommand` is the wrapper's absolute path on the workbox:
+3. Done. On the laptop, create `~/.pi/agent/intercom/config.json`. `remoteCommand` is the wrapper's absolute path on the workbox:
 
    ```json
    { "crossMachine": { "machineName": "laptop", "remoteCommand": "/home/<user>/.local/bin/pi-intercom" } }
@@ -78,7 +85,7 @@ Each machine keeps its own broker, which only accepts local connections. To send
 
 ## When the SSH route changes
 
-Neither tool knows about routes. They only use the alias `workbox`, and `~/.ssh/config` picks the route with `Match exec` blocks each time a connection opens: home LAN, then the phone hotspot, then a Cloudflare Access tunnel.
+Neither tool knows about routes. They only use the alias `workbox`, and `~/.ssh/config` picks the route each time a connection opens: the workbox is looked up by its SSH host key on whatever local network the laptop is on (home Wi-Fi or the phone hotspot), and otherwise the alias falls through to a private address that only exists inside Cloudflare Zero Trust, reached through WARP. The off-network route and its first-error diagnosis are in the workspace guide `docs/guides/workbox-remote-access-over-warp.md`.
 
 - **Herdr:** its generated SSH config includes `~/.ssh/config` first, so the route rules apply.
 - **pi-intercom:** the relay is plain `ssh <target>` (`cross-machine-transport.ts`).
@@ -94,8 +101,8 @@ Neither tool knows about routes. They only use the alias `workbox`, and `~/.ssh/
 Things that can still go wrong:
 
 - **Right after a network switch:** Herdr reuses one open SSH connection (`ControlMaster`, `ControlPersist`). When the network changes, that connection dies, and SSH can take about a minute to notice (`ServerAliveInterval 15`, `ServerAliveCountMax 4`). Sends fail until then. Setting `ServerAliveInterval 5` and `ServerAliveCountMax 2` on the alias in `~/.ssh/config` shortens it, because Herdr reads that file first.
-- **Tunnel login expiry:** when the Cloudflare Access login runs out, `cloudflared` wants a browser login, which an agent can't do. Off the LAN, sends fail until someone runs `ssh workbox` once by hand.
-- **Untested:** the tunnel route had not worked end to end as of 2026-10-20.
+- **WARP off or not enrolled:** off the home network, sends time out until `warp-cli status` shows Connected. Enrolling needs a one-time browser login, which an agent can't do alone; see the workspace guide above.
+- **Verified:** on 2026-10-29, `ssh workbox` worked through WARP from outside the workbox's network.
 - **Keep `Match` lines stable:** reserve the workbox's IP on the router and the hotspot.
 
 ## Related
