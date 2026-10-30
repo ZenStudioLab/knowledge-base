@@ -16,7 +16,7 @@ publish_candidate: false
 
 Goal: Pi agents on the laptop and on the workbox send each other messages with pi-intercom. Here "laptop" and "workbox" are both the SSH host aliases and the Herdr machine labels.
 
-Status (2026-10-30): laptop → workbox works. A ping from a laptop Pi session reached the workbox agent `worker` and showed `From …@laptop · unverified cross-machine`. The reverse direction (replies and `/handover` back to the laptop) is not set up.
+Status (2026-10-30): laptop → workbox works. A ping from a laptop Pi session reached the workbox agent `worker` and showed `From …@laptop · unverified cross-machine`. The reverse direction (workbox → laptop) works on the same network as of 2026-10-30: a workbox message reached the laptop agent `laptop-main`. It does not work across networks yet.
 
 ## How it works
 
@@ -82,7 +82,7 @@ Done: steps 1 to 6 (step 6 already held). Verified 2026-10-30.
 
 6. Before relying on it, make sure the workbox accepts key-based SSH logins only. Anyone who can run the relay over SSH can make workbox agents act on their messages. Setting `inboundTrigger` to `"replies"` or `"never"` in the receiver's `config.json` limits which messages start a turn.
 
-**The other direction** (replies, and `/handover` back to the laptop) needs the reverse route: the workbox's public key in the laptop's `authorized_keys`, an SSH host entry for the laptop on the workbox, and steps 1–5 mirrored.
+**The other direction** (replies, and `/handover` back to the laptop), same network: done 2026-10-30. The laptop runs an SSH server with key-only logins, the workbox's public key sits in the laptop's `authorized_keys` behind a forced `restrict` command, the workbox finds the laptop by its SSH host key (as the laptop finds the workbox), and steps 1–5 are mirrored. Herdr sends multi-line shell snippets, so the forced command has to run what it is given: the key amounts to a shell on the laptop, and each command is logged. The details are in the workspace guide `docs/guides/workbox-remote-access-over-warp.md`. Across networks it still needs the workbox enrolled in WARP and a private address plus tunnel route for the laptop.
 
 ## When the SSH route changes
 
