@@ -11,6 +11,7 @@ Machine setup, tools, services, and accounts.
 
 ## Files
 
+- [Linux: Turn the screen off now and after 5 minutes idle (GNOME laptop, Cinnamon workbox)](./linux-screen-off-now-and-on-idle.md) — Setup
 - [Pi intercom: send messages between Pi agents on two machines over SSH](./pi-intercom-cross-machine.md) — Setup
 - [Playwright MCP Debug Setup](./playwright-mcp-debug-setup.md) — Setup
 - [Ubuntu: Make an external keyboard's F-row match the ThinkPad F-row](./ubuntu-external-keyboard-fkey-remap.md) — Setup
