@@ -19,7 +19,7 @@ Goal: a `screenoff` command that turns the display off right away, and the displ
 Status (2026-10-30):
 
 - **Laptop:** `screenoff` and the 5-minute watcher service are installed, and the service is enabled and running. Neither has been seen to blank the laptop screen yet.
-- **Workbox:** `screenoff` runs and the system marks the monitor off, but the screen wakes again within about a second. The cause is found (the monitor drops its HDMI connection in standby). The proposed fix, forcing the HDMI port to "connected", is not yet tested. See Open Items.
+- **Workbox:** the 5-minute auto-off works, and a keypress wakes the screen (confirmed by the user on 2026-10-30). `screenoff` works while the desktop is unlocked. While the lock screen is up it fails: the monitor drops its HDMI connection in standby, the lock screen reacts by bringing up its unlock prompt, and the display wakes within about a second. Forcing the HDMI port to "connected" is the untested fix for that case. See Open Items.
 
 ## Laptop (GNOME, Wayland)
 
@@ -142,15 +142,15 @@ With the Intel driver loaded, the screen still woke right back up. A trace on 20
 ```
 +0.0 s  Monitor is Off   hdmi=connected      xset dpms force off
 +0.6 s  Monitor is Off   hdmi=disconnected   monitor drops the HDMI link (hot-plug event)
-+0.8 s  Monitor is On    hdmi=disconnected   Cinnamon reacts to the "unplug" and wakes the display
++0.8 s  Monitor is On    hdmi=disconnected   the lock screen reacts to the "unplug" and wakes the display
 +2.3 s  Monitor is On    hdmi=connected      second hot-plug event, display stays on
 ```
 
-There were no input events at any point, so the keyboard and mouse aren't the cause. The lock screen also reacts to the same unplug event, but it isn't the cause.
+There were no input events at any point, so the keyboard and mouse aren't the cause. Every failing run had the lock screen up. At the moment of each wake, the journal shows `cinnamon-screensaver-pam-helper` starting, meaning the lock screen brought up its unlock prompt. A run with the desktop unlocked (2026-10-29 22:29) stayed off for the full 12 seconds. Check the lock state with `cinnamon-screensaver-command -q` ("The screensaver is active" means locked).
 
 Turning off **Auto Source Switch** in the Samsung monitor's menu changed nothing. The trace was the same afterwards.
 
-Proposed fix (not yet tested): make Linux treat the HDMI port as always connected, so the dropped link no longer reaches Cinnamon. It lasts until the next reboot:
+Proposed fix for the locked case (not yet tested): make Linux treat the HDMI port as always connected, so the dropped link no longer reaches the lock screen. It lasts until the next reboot:
 
 ```bash
 echo on | sudo tee /sys/class/drm/card1-HDMI-A-1/status
@@ -197,7 +197,7 @@ Auto Source Switch off didn't stop the HDMI drop on the `LS27C36x`. Don't count 
 
 ## Open Items
 
-- Workbox: test the forced-`on` HDMI status with the trace command. If it holds, add `video=HDMI-A-1:e` to GRUB and confirm it after a reboot.
+- Workbox: with the lock screen up, test the forced-`on` HDMI status with the trace command. Only if it holds, add `video=HDMI-A-1:e` to GRUB and confirm it after a reboot. As of 2026-10-30 it isn't in `/etc/default/grub` or the running kernel's options.
 - Workbox: swap `screenoff` back to the plain version and delete `~/screenoff.debug.log`.
 - Laptop: confirm that `screenoff` and the 5-minute watcher actually blank the screen and that the screen wakes on input.
 - Laptop: the watcher fires once per idle period. If the screen wakes without real input, it stays on until the next idle period.
