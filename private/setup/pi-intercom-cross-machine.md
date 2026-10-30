@@ -1,7 +1,7 @@
 ---
 title: "Pi intercom: send messages between Pi agents on two machines over SSH"
 created: "2026-10-20"
-updated: "2026-10-29"
+updated: "2026-10-30"
 status: "active"
 visibility: "private"
 tags: [pi, pi-intercom, herdr, ssh, cross-machine, setup]
@@ -16,7 +16,7 @@ publish_candidate: false
 
 Goal: Pi agents on the laptop and on the workbox send each other messages with pi-intercom. Here "laptop" and "workbox" are both the SSH host aliases and the Herdr machine labels.
 
-Status (2026-10-29): partly set up. Steps 1 and 3 are done and step 6 already holds (the workbox takes key-based SSH logins only). Step 2 waits on a Herdr upgrade on the laptop, which cannot run inside a Herdr session; steps 4 and 5 wait on step 2. pi-intercom 0.17.1 and its local message broker run on both machines, and the laptop reaches the workbox over SSH with a key, on the home network or through WARP.
+Status (2026-10-30): laptop → workbox works. A ping from a laptop Pi session reached the workbox agent `worker` and showed `From …@laptop · unverified cross-machine`. The reverse direction (replies and `/handover` back to the laptop) is not set up.
 
 ## How it works
 
@@ -34,11 +34,12 @@ Each machine keeps its own broker, which only accepts local connections. To send
 
 - **`node` over SSH:** `cli.mjs` starts with `#!/usr/bin/env node`, and a non-interactive SSH command has no node on its `PATH`. Even the full path to `cli.mjs` fails with `/usr/bin/env: 'node': No such file or directory`. A wrapper that calls node by absolute path fixes it (step 1).
 - **Agent names:** a remote agent can only be addressed by name after it has been given one (step 4). Until then, only its full session UUID works.
+- **Saved machine in the sidebar:** `herdr machine add` makes every open Herdr client connect to the workbox and list it in its sidebar. Intercom needs the saved entry to exist and be enabled, but not an open pane. A separate terminal running `herdr --remote workbox` works alongside it.
 - **Herdr versions:** `herdr machine add` prepares Herdr on the remote side, so match versions first. On 2026-10-29 the laptop had 0.9.1 and the workbox 0.9.5 (the current stable release). `herdr update` refuses to run inside a Herdr session, so detach first. It checks the download against the SHA-256 in the official `herdr.dev` release manifest.
 
 ## Steps (laptop → workbox, one way)
 
-Done on 2026-10-29: steps 1 and 3. Step 6 already holds.
+Done: steps 1 to 6 (step 6 already held). Verified 2026-10-30.
 
 1. On the workbox, create `~/.local/bin/pi-intercom` and make it executable:
 
@@ -54,7 +55,7 @@ Done on 2026-10-29: steps 1 and 3. Step 6 already holds.
    exec "$HOME/.local/share/pi-node/current/bin/node" "$HOME/.pi/agent/npm/node_modules/pi-intercom/cli.mjs" "$@"
    ```
 
-2. On the laptop, detach from Herdr and run `herdr update` in a plain terminal so it matches the workbox version (0.9.5 on 2026-10-29), then:
+2. Done. On the laptop, detach from Herdr and run `herdr update` in a plain terminal so it matches the workbox version (0.9.5 on 2026-10-29), then:
 
    ```bash
    herdr machine add --label workbox workbox
@@ -69,9 +70,9 @@ Done on 2026-10-29: steps 1 and 3. Step 6 already holds.
 
    Restart the laptop's Pi sessions so they load it.
 
-4. On the workbox, name one agent: `herdr agent rename <pane> worker`. Herdr drops the name when that agent exits.
+4. Done (from the laptop: `herdr --machine workbox agent rename <pane> worker`). On the workbox, name one agent: `herdr agent rename <pane> worker`. Herdr drops the name when that agent exits.
 
-5. Test from a laptop Pi session:
+5. Done. Test from a laptop Pi session that was started after step 3:
 
    ```
    intercom({ action: "send", to: "worker@workbox", message: "ping" })
